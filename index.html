@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>بوابة الامتحانات</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f1f5f9;color:#172b4d;font-family:Tahoma,Arial}
+header{background:#12345a;color:white;padding:25px;text-align:center}
+header h1{margin:0}
+main{max-width:750px;margin:25px auto;padding:15px}
+.card{background:white;padding:22px;margin-bottom:18px;border-radius:15px;box-shadow:0 3px 12px #0001}
+h2{color:#1d4ed8}
+input,select{width:100%;padding:13px;margin:8px 0;border:1px solid #ccd5e0;border-radius:9px;font-size:16px}
+button{background:#2563eb;color:white;border:0;padding:12px 18px;border-radius:9px;margin:5px;cursor:pointer;font-size:15px}
+.subject{padding:13px;border:1px solid #ddd;border-radius:9px;margin:9px 0;display:flex;justify-content:space-between;align-items:center;gap:8px}
+small{color:#64748b}
+.hidden{display:none}
+</style>
+</head>
+<body>
+<header>
+<h1>📚 بوابة الامتحانات</h1>
+<p>منصتك الإلكترونية للاختبارات والمراجعة</p>
+</header>
+<main>
+<div class="card">
+<h2>دخول الطالب</h2>
+<p>أهلاً بك في بوابة الامتحانات</p>
+<input id="code" placeholder="كود التفعيل">
+<select id="level">
+<option value="">اختر الفرقة الدراسية</option>
+<option>الفرقة الأولى</option>
+<option>الفرقة الثانية</option>
+</select>
+<button onclick="login()">دخول المنصة</button>
+<p id="msg"></p>
+</div>
+
+<div id="student" class="card hidden">
+<h2>المواد الدراسية</h2>
+<div id="studentList"></div>
+</div>
+
+<div class="card">
+<h2>لوحة الإدارة</h2>
+<p>إضافة المواد الدراسية للطلاب</p>
+<select id="adminLevel">
+<option>الفرقة الأولى</option>
+<option>الفرقة الثانية</option>
+</select>
+<input id="subjectName" placeholder="اسم المادة">
+<button onclick="addSubject()">إضافة المادة</button>
+<div id="adminList"></div>
+</div>
+<p style="text-align:center;color:#64748b">بوابة الامتحانات © 2026</p>
+</main>
+<script>
+let subjects=JSON.parse(localStorage.getItem('subjects')||'[]');
+
+function save(){
+localStorage.setItem('subjects',JSON.stringify(subjects));
+render();
+}
+
+function addSubject(){
+let name=document.getElementById('subjectName').value.trim();
+let level=document.getElementById('adminLevel').value;
+if(!name){alert('اكتب اسم المادة');return;}
+subjects.push({name,level});
+document.getElementById('subjectName').value='';
+save();
+}
+
+function render(){
+let admin=document.getElementById('adminList');
+admin.innerHTML='';
+subjects.forEach((s,i)=>{
+let d=document.createElement('div');
+d.className='subject';
+let span=document.createElement('span');
+span.textContent=s.name+' - '+s.level;
+let b=document.createElement('button');
+b.textContent='حذف';
+b.onclick=()=>{subjects.splice(i,1);save();};
+d.append(span,b);
+admin.append(d);
+});
+showSubjects();
+}
+
+function login(){
+let code=document.getElementById('code').value.trim();
+let level=document.getElementById('level').value;
+if(!code||!level){document.getElementById('msg').textContent='أدخل الكود والفرقة';return;}
+if(code!=='EXAM2026'){
+document.getElementById('msg').textContent='كود تجريبي غير صحيح';
+return;
+}
+document.getElementById('msg').textContent='تم الدخول التجريبي بنجاح';
+document.getElementById('student').classList.remove('hidden');
+showSubjects();
+}
+
+function showSubjects(){
+let level=document.getElementById('level').value;
+let list=document.getElementById('studentList');
+list.innerHTML='';
+subjects.filter(s=>s.level===level).forEach(s=>{
+let d=document.createElement('div');
+d.className='subject';
+d.textContent=s.name;
+list.append(d);
+});
+}
+render();
+</script>
+</body>
+</html>
