@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#12345a">
+<title>بوابة الامتحانات</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f5f9;color:#172b4d;font-family:Tahoma,Arial;line-height:1.7}
+header{background:linear-gradient(135deg,#12345a,#2563eb);color:#fff;padding:28px 16px;text-align:center}
+header h1{margin:0;font-size:28px}header p{margin:5px 0 0;color:#dbeafe}
+main{max-width:850px;margin:22px auto;padding:0 14px}.card{background:#fff;padding:20px;margin:0 0 16px;border-radius:16px;box-shadow:0 4px 16px #0f172a12}
+h2{color:#1d4ed8;margin-top:0;font-size:21px}input,select{width:100%;padding:13px;margin:7px 0;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff}
+button{background:#2563eb;color:#fff;border:0;padding:12px 18px;border-radius:10px;margin:5px 0;cursor:pointer;font-size:15px;font-weight:bold}
+button.secondary{background:#e2e8f0;color:#12345a}button:disabled{opacity:.45;cursor:not-allowed}
+.subject{padding:14px;border:1px solid #e2e8f0;border-radius:12px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.subject small{display:block;color:#64748b}.hidden{display:none!important}.muted{color:#64748b}.question{padding:16px 0;border-bottom:1px solid #e2e8f0}.question h3{font-size:17px;margin:0 0 10px}
+.option{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border:1px solid #e2e8f0;border-radius:9px;margin:7px 0;cursor:pointer}.option input{width:auto;margin:5px 0 0}.correct{border-color:#16a34a;background:#f0fdf4}.wrong{border-color:#dc2626;background:#fef2f2}.answer-key{color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 12px;border-radius:9px;font-weight:bold;margin:10px 0 0}
+#result{font-size:20px;font-weight:bold;color:#12345a}footer{text-align:center;color:#64748b;padding:10px 0 28px;font-size:13px}
+</style>
+</head>
+<body>
+<header><h1>📚 بوابة الامتحانات</h1><p>منصتك الإلكترونية للاختبارات والمراجعة</p></header>
+<main>
+<section class="card" id="loginCard">
+<h2>دخول الطالب</h2><p class="muted">اكتب كود التفعيل واختر الفرقة الدراسية.</p>
+<input id="code" placeholder="كود التفعيل" autocomplete="off">
+<select id="level"><option value="">اختر الفرقة الدراسية</option><option value="first">الفرقة الأولى</option><option value="second">الفرقة الثانية</option></select>
+<button onclick="login()">دخول المنصة</button><p id="msg" role="status"></p>
+</section>
+<section class="card hidden" id="studentCard">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 id="levelTitle" style="margin:0">مواد الفرقة الأولى</h2><button class="secondary" onclick="logout()">خروج</button></div>
+<p class="muted">اختر المادة لبدء الاختبار. يتم عرض النتيجة والإجابات الصحيحة بعد التسليم.</p><div id="subjectList"></div>
+</section>
+<section class="card hidden" id="examCard">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 id="examTitle" style="margin:0"></h2><button class="secondary" onclick="backToSubjects()">العودة للمواد</button></div>
+<p id="examInfo" class="muted"></p><div id="questions"></div>
+<button id="submitBtn" onclick="submitExam()">تسليم الإجابات وحساب الدرجة</button>
+<div id="resultBox" class="hidden"><hr><p id="result"></p><div id="review"></div><button onclick="backToSubjects()">العودة للمواد</button></div>
+</section>
+<section class="card hidden" id="adminCard">
+<h2>لوحة الإدارة</h2><p class="muted">إضافة أسماء مواد جديدة للعرض على الطلاب. بنك أسئلتها يُضاف بعد إدخال الأسئلة والإجابات.</p>
+<select id="adminLevel"><option value="first">الفرقة الأولى</option><option value="second">الفرقة الثانية</option></select>
+<input id="subjectName" placeholder="اسم المادة"><button onclick="addSubject()">إضافة المادة</button><div id="adminList"></div>
+</section>
+<footer>بوابة الامتحانات © 2026</footer>
+</main>
+<script>
+const ACCESS_CODE='EXAM2026';
+const exams={
+'مبادئ قانون':[
+{q:'من خصائص القاعدة القانونية وتتحقق عند وضعها وقبل تطبيقها:',o:['العمومية','التجريد','التنظيم','ليس أياً مما سبق'],a:1},
+{q:'علاقة الموظف بالدولة تخضع لقواعد القانون:',o:['المدني','الدولي','الإداري','العمل'],a:2},
+{q:'فكرة نسبية تختلف باختلاف الزمان والمكان وتعتبر جزءاً من الأخلاق العامة في المجتمع:',o:['الآداب العامة','النظام العام','محاكم الأسرة','قواعد الضبط والبوليس'],a:0},
+{q:'قد يكون منحة من الحاكم للشعب:',o:['التشريع','القانون','الدستور','العرف'],a:2},
+{q:'أشد أنواع الجزاء ويمس الحرية الشخصية:',o:['المدني','الجنائي','الإداري','التأديبي'],a:1},
+{q:'ينظم عمل المنظمات الدولية:',o:['القانون الدستوري','القانون الدولي الخاص','القانون الدولي العام','القانون الإداري'],a:2},
+{q:'تعتبر قواعد القانون العام كلها:',o:['قواعد مكملة','قواعد آمرة','قواعد اتفاقية','قواعد عرفية'],a:1},
+{q:'يعتبر من أهم فروع القانون الخاص ويسمى بأبو القوانين:',o:['القانون المدني','القانون الجنائي','القانون الدولي','القانون الدستوري'],a:0},
+{q:'مجموع قواعد السلوك الملزمة لأفراد المجتمع:',o:['الحق','القانون','الواجب','العرف'],a:1},
+{q:'الحق والواجب:',o:['متنافران','متلازمان','متماثلان','متوارثان'],a:1},
+{q:'الأساس السياسي والخلقي والاجتماعي الذي يسود في المجتمع:',o:['الدستور','النظام العام','التشريع','الآداب العامة'],a:1},
+{q:'من أهم مزاياه التعرف على قواعد القانون في فرع من فروعه:',o:['التقنين','العرف','الدستور','التشريع'],a:0},
+{q:'مجموعة القواعد التي تحكم عمل السلطة القضائية:',o:['قانون العقوبات','قانون المرافعات','قانون العمل','قانون الإجراءات الجنائية'],a:1},
+{q:'هو الجزاء الذي يوقع حال مخالفة أحد قواعد القانون الإداري:',o:['الجزاء المدني','الجزاء الجنائي','الجزاء الإداري','الجزاء التأديبي'],a:3},
+{q:'تقترن القاعدة الأخلاقية بجزاء:',o:['مادي','أدبي','فوري','مالي'],a:0},
+{q:'قد يكون في صورة اتفاق بين الحاكم والشعب:',o:['العرف','الدستور','القانون','التشريع'],a:1},
+{q:'روابط يغلب عليها الطابع الشخصي:',o:['الروابط الأسرية','الروابط التنظيمية','الروابط الاقتصادية','الروابط السياسية'],a:0},
+{q:'يتمثل الجزاء المدني في عدة صور:',o:['التنفيذ العيني','التعويض','البطلان والفسخ','كل ما سبق'],a:3},
+{q:'تسمو بالنفس البشرية في علاقة الإنسان بربه:',o:['قواعد الأخلاق','قواعد الدين','قواعد المجاملات','قواعد القانون'],a:1},
+{q:'تنظم قواعده حق الملكية وطرق انتقاله واستعماله وانقضاؤه:',o:['القانون المدني','قانون العمل','قانون الأحوال الشخصية','القانون الدستوري'],a:0}
+],
+'صح وغلط مبادئ قانون':[
+{q:'تطبق مبادئ الشريعة الإسلامية في مسائل الأحوال الشخصية.',a:true},
+{q:'صفة العمومية والتجريد للقاعدة القانونية لا يعني أن تظل القاعدة أبدية.',a:true},
+{q:'تعد قواعد القانون العام قواعد قانونية مكملة غير ملزمة للأفراد.',a:false},
+{q:'تعد فكرتا النظام العام والآداب العامة من الأفكار النسبية التي تختلف باختلاف الزمان والمكان.',a:true},
+{q:'لا تعتبر النية ذات اعتبار في القانون بشكل عام إلا في حالات معينة.',a:true},
+{q:'يعتبر الدستور المصري من الدساتير المرنة.',a:false},
+{q:'تتكون الآداب العامة في المجتمع نتيجة الموروثات من العقيدة والمبادئ والعرف وتختلف من مجتمع لآخر ومن وقت لآخر.',a:true},
+{q:'لكل حق دعوى قضائية تحميه وتتبعه وتلازمه حتى انقضائه.',a:true},
+{q:'تمثل الغاية فارقاً واضحاً ومهماً بين الأخلاق والقانون.',a:true},
+{q:'قد يصدر القانون ليطبق على شخص واحد بصفته.',a:true},
+{q:'قانون العمل يضم مجموعة القواعد القانونية التي تنظم العلاقة بين العامل وصاحب العمل.',a:true},
+{q:'تتأثر فكرتا النظام العام والآداب العامة بالموروثات والمعتقدات السائدة في كل مجتمع.',a:true},
+{q:'تنظم قواعد قانون العقوبات كلاً من الجريمة والعقوبة.',a:true},
+{q:'العرف مصدر من مصادر التشريع.',a:false},
+{q:'تداخل الجزاءات يعني توقيع أكثر من جزاء على المخالفة الواحدة.',a:true},
+{q:'اللائحة التنفيذية قد تصدر مصاحبة للقانون أو تصدر مستقلة عنه.',a:false},
+{q:'تصدر لائحة المرور عن السلطة التشريعية وهي البرلمان.',a:false},
+{q:'الدستور صورة من صور التشريعات.',a:true},
+{q:'تعد قواعد العدالة من المصادر الاحتياطية للقانون.',a:true},
+{q:'رئيس الجمهورية هو الرئيس الأعلى للسلطة القضائية.',a:false}
+]};
+let activeLevel='first',currentExam=[],extraSubjects=JSON.parse(localStorage.getItem('extraSubjects')||'[]');
+function login(){const code=document.getElementById('code').value.trim(),level=document.getElementById('level').value,msg=document.getElementById('msg');if(!code||!level){msg.textContent='أدخل كود التفعيل واختر الفرقة.';return;}if(code!==ACCESS_CODE){msg.textContent='كود التفعيل غير صحيح.';return;}activeLevel=level;document.getElementById('loginCard').classList.add('hidden');document.getElementById('studentCard').classList.remove('hidden');document.getElementById('adminCard').classList.remove('hidden');document.getElementById('levelTitle').textContent=level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';renderSubjects();}
+function logout(){['studentCard','adminCard','examCard'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('loginCard').classList.remove('hidden');document.getElementById('code').value='';}
+function renderSubjects(){const box=document.getElementById('subjectList');box.innerHTML='';const names=activeLevel==='first'?['مبادئ قانون','مهارات اتصال','تفكير ابتكاري','إنجليزي','مبادئ اقتصاد']:[];names.forEach(name=>{const ready=name==='مبادئ قانون';const d=document.createElement('div');d.className='subject';const info=document.createElement('div');const strong=document.createElement('strong');strong.textContent=name;const small=document.createElement('small');small.textContent=ready?'20 اختيار من متعدد + 20 صح وغلط':'بنك الأسئلة قيد الإضافة';info.append(strong,small);const b=document.createElement('button');b.textContent=ready?'ابدأ الاختبار':'قريباً';b.disabled=!ready;b.onclick=()=>startExam(name);d.append(info,b);box.append(d);});extraSubjects.filter(x=>x.level===activeLevel).forEach(x=>{const d=document.createElement('div');d.className='subject';d.textContent=x.name+' — بنك الأسئلة قيد الإضافة';box.append(d);});}
+function startExam(name){currentExam=[...exams['مبادئ قانون'],...exams['صح وغلط مبادئ قانون']];document.getElementById('studentCard').classList.add('hidden');document.getElementById('adminCard').classList.add('hidden');document.getElementById('examCard').classList.remove('hidden');document.getElementById('examTitle').textContent=name;document.getElementById('examInfo').textContent='عدد الأسئلة: '+currentExam.length+' — اختر إجابة واحدة لكل سؤال.';document.getElementById('resultBox').classList.add('hidden');document.getElementById('submitBtn').disabled=false;const box=document.getElementById('questions');box.innerHTML='';currentExam.forEach((q,i)=>{const d=document.createElement('div');d.className='question';const h=document.createElement('h3');h.textContent=(i+1)+'. '+q.q;d.append(h);(q.o||['صح','خطأ']).forEach((opt,j)=>{const label=document.createElement('label');label.className='option';const input=document.createElement('input');input.type='radio';input.name='q'+i;input.value=j;label.append(input,document.createTextNode(opt));d.append(label);});box.append(d);});}
+function submitExam(){
+ let score=0;
+ currentExam.forEach((q,i)=>{
+   const chosen=document.querySelector('input[name="q'+i+'"]:checked');
+   const value=chosen?Number(chosen.value):null;
+   const correct=q.o?q.a:(q.a?0:1);
+   if(value===correct) score++;
+
+   const labels=[...document.querySelectorAll('input[name="q'+i+'"]')].map(input=>input.closest('label'));
+   labels.forEach((label,j)=>{
+     if(j===correct) label.classList.add('correct');
+     if(value===j && value!==correct) label.classList.add('wrong');
+     label.querySelector('input').disabled=true;
+   });
+
+   const questionBox=document.querySelectorAll('.question')[i];
+   const answer=document.createElement('p');
+   answer.className='answer-key';
+   answer.textContent='الإجابة الصحيحة: '+(q.o?q.o[q.a]:(q.a?'صح':'خطأ'));
+   questionBox.append(answer);
+ });
+ document.getElementById('result').textContent='نتيجتك: '+score+' من '+currentExam.length;
+ document.getElementById('resultBox').classList.remove('hidden');
+ document.getElementById('submitBtn').disabled=true;
+}
+function backToSubjects(){document.getElementById('examCard').classList.add('hidden');document.getElementById('studentCard').classList.remove('hidden');document.getElementById('adminCard').classList.remove('hidden');}
+function addSubject(){const name=document.getElementById('subjectName').value.trim(),level=document.getElementById('adminLevel').value;if(!name){alert('اكتب اسم المادة');return;}extraSubjects.push({name,level});localStorage.setItem('extraSubjects',JSON.stringify(extraSubjects));document.getElementById('subjectName').value='';renderSubjects();renderAdmin();}
+function renderAdmin(){const box=document.getElementById('adminList');box.innerHTML='';extraSubjects.forEach((s,i)=>{const d=document.createElement('div');d.className='subject';const t=document.createElement('span');t.textContent=s.name+' - '+(s.level==='first'?'الفرقة الأولى':'الفرقة الثانية');const b=document.createElement('button');b.className='secondary';b.textContent='حذف';b.onclick=()=>{extraSubjects.splice(i,1);localStorage.setItem('extraSubjects',JSON.stringify(extraSubjects));renderSubjects();renderAdmin();};d.append(t,b);box.append(d);});}
+renderAdmin();
+</script>
+</body></html>
