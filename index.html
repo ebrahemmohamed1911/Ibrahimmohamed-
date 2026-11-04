@@ -31,38 +31,77 @@ footer{text-align:center;color:#64748b;padding:10px 0 28px;font-size:13px}
 <header><h1>📚 بوابة الامتحانات</h1><p>منصتك الإلكترونية للاختبارات والمراجعة</p></header>
 <main>
 <section class="card" id="loginCard">
-<h2>دخول الطالب</h2><p class="muted">اكتب كود التفعيل واختر الفرقة الدراسية.</p>
+<h2>دخول الطالب</h2>
+<p class="muted">اكتب اسمك وكود التفعيل واختر الفرقة الدراسية.</p>
+<p class="muted">سيتم تسجيل اسم الطالب ووقت الدخول لمتابعة الزيارات من لوحة الإدارة.</p>
+<input id="studentName" placeholder="اسم الطالب" autocomplete="name" maxlength="100">
 <input id="code" placeholder="كود التفعيل" autocomplete="off">
-<select id="level"><option value="">اختر الفرقة الدراسية</option><option value="first">الفرقة الأولى</option><option value="second">الفرقة الثانية</option></select>
-<button onclick="login()">دخول المنصة</button><p id="msg" role="status"></p>
+<select id="level">
+<option value="">اختر الفرقة الدراسية</option>
+<option value="first">الفرقة الأولى</option>
+<option value="second">الفرقة الثانية</option>
+</select>
+<button onclick="login()">دخول المنصة</button>
+<p id="msg" role="status"></p>
 </section>
+
 <section class="card" id="adminLoginCard">
-<h2>دخول الإدارة</h2><p class="muted">الدخول مخصص لحساب الإدارة فقط.</p>
+<h2>دخول الإدارة</h2>
+<p class="muted">الدخول مخصص لحساب الإدارة فقط.</p>
 <input id="adminEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
 <input id="adminPassword" type="password" placeholder="كلمة المرور" autocomplete="current-password">
-<button id="adminLoginBtn" onclick="adminLogin()">دخول الإدارة</button><p id="adminMsg" role="status"></p>
+<button id="adminLoginBtn" onclick="adminLogin()">دخول الإدارة</button>
+<p id="adminMsg" role="status"></p>
 </section>
+
 <section class="card hidden" id="studentCard">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-<h2 id="levelTitle" style="margin:0">مواد الفرقة الأولى</h2><button class="secondary" onclick="logout()">خروج</button></div>
-<p class="muted">اختر المادة لبدء الاختبار. تظهر الإجابة الصحيحة والنتيجة بعد التسليم.</p><div id="subjectList"></div>
+<h2 id="levelTitle" style="margin:0">مواد الفرقة الأولى</h2>
+<button class="secondary" onclick="logout()">خروج</button>
+</div>
+<p class="muted">اختر المادة لبدء الاختبار. تظهر الإجابة الصحيحة والنتيجة بعد التسليم.</p>
+<div id="subjectList"></div>
 </section>
+
 <section class="card hidden" id="examCard">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-<h2 id="examTitle" style="margin:0"></h2><button class="secondary" onclick="backToSubjects()">العودة للمواد</button></div>
-<p id="examInfo" class="muted"></p><div id="questions"></div>
+<h2 id="examTitle" style="margin:0"></h2>
+<button class="secondary" onclick="backToSubjects()">العودة للمواد</button>
+</div>
+<p id="examInfo" class="muted"></p>
+<div id="questions"></div>
 <button id="submitBtn" onclick="submitExam()">تسليم الإجابات وحساب الدرجة</button>
-<div id="resultBox" class="hidden"><hr><p id="result"></p><div id="review"></div><button onclick="backToSubjects()">العودة للمواد</button></div>
+<div id="resultBox" class="hidden">
+<hr>
+<p id="result"></p>
+<div id="review"></div>
+<button onclick="backToSubjects()">العودة للمواد</button>
+</div>
 </section>
+
 <section class="card hidden" id="adminCard">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
-<h2>لوحة الإدارة</h2><button class="secondary" onclick="adminLogout()">خروج الإدارة</button></div>
+<h2>لوحة الإدارة</h2>
+<button class="secondary" onclick="adminLogout()">خروج الإدارة</button>
+</div>
 <p class="muted">إضافة أسماء مواد جديدة للعرض على الطلاب. بنك الأسئلة الخاص بالمواد الأخرى يضاف لاحقاً.</p>
-<select id="adminLevel"><option value="first">الفرقة الأولى</option><option value="second">الفرقة الثانية</option></select>
-<input id="subjectName" placeholder="اسم المادة"><button id="addSubjectBtn" onclick="addSubject()">إضافة المادة</button><div id="adminList"></div>
+<select id="adminLevel">
+<option value="first">الفرقة الأولى</option>
+<option value="second">الفرقة الثانية</option>
+</select>
+<input id="subjectName" placeholder="اسم المادة">
+<button id="addSubjectBtn" onclick="addSubject()">إضافة المادة</button>
+<div id="adminList"></div>
+<hr>
+<h2>سجل زوار المنصة</h2>
+<p class="muted">يعرض أسماء الطلاب وأوقات دخولهم المسجلة. آخر 200 زيارة.</p>
+<button class="secondary" onclick="renderVisits()">تحديث سجل الزوار</button>
+<div id="visitsList"><p class="muted">سجل الزيارات يظهر بعد تسجيل دخول الإدارة.</p></div>
 </section>
+
 <footer>بوابة الامتحانات © 2026</footer>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL='https://hpigmwchxvoojururlqg.supabase.co';
@@ -70,6 +109,7 @@ const SUPABASE_PUBLISHABLE_KEY='sb_publishable_qzrN3jBDuEtC5l4g5Gvu_Q_rmPhkxhf';
 const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 const ACCESS_CODE='EXAM2026';
 
+/* بنك الأسئلة */
 const exams={
 'مبادئ قانون':[
 {q:'من خصائص القاعدة القانونية وتتحقق عند وضعها وقبل تطبيقها:',o:['العمومية','التجريد','التنظيم','ليس أياً مما سبق'],a:1},
@@ -93,6 +133,7 @@ const exams={
 {q:'تسمو بالنفس البشرية في علاقة الإنسان بربه:',o:['قواعد الأخلاق','قواعد الدين','قواعد المجاملات','قواعد القانون'],a:1},
 {q:'تنظم قواعده حق الملكية وطرق انتقاله واستعماله وانقضاؤه:',o:['القانون المدني','قانون العمل','قانون الأحوال الشخصية','القانون الدستوري'],a:0}
 ],
+
 'صح وغلط مبادئ قانون':[
 {q:'تطبق مبادئ الشريعة الإسلامية في مسائل الأحوال الشخصية.',a:true},
 {q:'صفة العمومية والتجريد للقاعدة القانونية لا يعني أن تظل القاعدة أبدية.',a:true},
@@ -115,6 +156,7 @@ const exams={
 {q:'تعد قواعد العدالة من المصادر الاحتياطية للقانون.',a:true},
 {q:'رئيس الجمهورية هو الرئيس الأعلى للسلطة القضائية.',a:false}
 ],
+
 'مهارات اتصال':[
 {q:'يُعرّف الاتصال بأنه:',o:['نقل بيانات','تبادل معلومات وأفكار بين طرفين','عملية استماع فقط','تحويل الرسائل إلى رموز'],a:1},
 {q:'من خصائص الاتصال:',o:['يحدث بدون أطراف','عملية ديناميكية مستمرة','لا يحتاج لتغذية راجعة','يعتمد فقط على اللغة'],a:1},
@@ -170,6 +212,7 @@ const exams={
 {q:'يقضي الإنسان في عملية الإنصات وحدها نسبة:',o:['25%','35%','45%','75%'],a:2},
 {q:'أولى مراحل عملية الإنصات:',o:['التذكر','التفسير','الاستماع','الاستيعاب'],a:2}
 ],
+
 'صح وغلط مهارات اتصال':[
 {q:'الاتصال الاجتماعي لا يتم في وجود الآخرين.',a:false},
 {q:'لا تمثل عملية الاتصال حاجة اجتماعية ضرورية لكل إنسان.',a:false},
@@ -257,19 +300,39 @@ const exams={
 let activeLevel='first',currentExam=[],currentSubject='';
 
 async function login(){
-const code=document.getElementById('code').value.trim(),level=document.getElementById('level').value,msg=document.getElementById('msg');
+const studentName=document.getElementById('studentName').value.trim();
+const code=document.getElementById('code').value.trim();
+const level=document.getElementById('level').value;
+const msg=document.getElementById('msg');
+if(studentName.length<2){msg.textContent='اكتب اسم الطالب بشكل صحيح.';return}
 if(!code||!level){msg.textContent='أدخل كود التفعيل واختر الفرقة.';return}
 if(code!==ACCESS_CODE){msg.textContent='كود التفعيل غير صحيح.';return}
-activeLevel=level;document.getElementById('loginCard').classList.add('hidden');document.getElementById('adminLoginCard').classList.add('hidden');
-document.getElementById('studentCard').classList.remove('hidden');document.getElementById('levelTitle').textContent=level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';await renderSubjects();
+msg.textContent='جارٍ تسجيل الدخول...';
+try{
+const {error:visitError}=await supabaseClient.rpc('record_site_visit',{p_full_name:studentName});
+if(visitError){console.error(visitError);msg.textContent='تعذر تسجيل الزيارة. حاول مرة أخرى.';return}
+activeLevel=level;
+document.getElementById('loginCard').classList.add('hidden');
+document.getElementById('adminLoginCard').classList.add('hidden');
+document.getElementById('studentCard').classList.remove('hidden');
+document.getElementById('levelTitle').textContent=level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';
+await renderSubjects();
+}catch(e){console.error(e);msg.textContent='حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.'}
 }
+
 function logout(){
 ['studentCard','examCard'].forEach(id=>document.getElementById(id).classList.add('hidden'));
-document.getElementById('loginCard').classList.remove('hidden');document.getElementById('adminLoginCard').classList.remove('hidden');
-document.getElementById('code').value='';document.getElementById('msg').textContent='';
+document.getElementById('loginCard').classList.remove('hidden');
+document.getElementById('adminLoginCard').classList.remove('hidden');
+document.getElementById('code').value='';
+document.getElementById('msg').textContent='';
 }
+
 async function adminLogin(){
-const email=document.getElementById('adminEmail').value.trim(),password=document.getElementById('adminPassword').value,msg=document.getElementById('adminMsg'),btn=document.getElementById('adminLoginBtn');
+const email=document.getElementById('adminEmail').value.trim();
+const password=document.getElementById('adminPassword').value;
+const msg=document.getElementById('adminMsg');
+const btn=document.getElementById('adminLoginBtn');
 if(!email||!password){msg.textContent='اكتب البريد الإلكتروني وكلمة المرور.';return}
 btn.disabled=true;msg.textContent='جارٍ التحقق من الحساب...';
 try{
@@ -277,82 +340,182 @@ const {data,error}=await supabaseClient.auth.signInWithPassword({email,password}
 if(error||!data.user){msg.textContent='تعذر تسجيل الدخول. راجع بيانات الحساب.';return}
 const {data:admin,error:checkError}=await supabaseClient.from('admin_users').select('user_id').eq('user_id',data.user.id).maybeSingle();
 if(checkError||!admin){await supabaseClient.auth.signOut();msg.textContent='هذا الحساب غير مسجل كحساب إدارة.';return}
-document.getElementById('adminLoginCard').classList.add('hidden');document.getElementById('loginCard').classList.add('hidden');document.getElementById('adminCard').classList.remove('hidden');await renderAdmin();msg.textContent='';
-}catch(e){msg.textContent='حدث خطأ في الاتصال. حاول مرة أخرى.'}finally{btn.disabled=false}
+document.getElementById('adminLoginCard').classList.add('hidden');
+document.getElementById('loginCard').classList.add('hidden');
+document.getElementById('adminCard').classList.remove('hidden');
+await renderAdmin();await renderVisits();msg.textContent='';
+}catch(e){msg.textContent='حدث خطأ في الاتصال. حاول مرة أخرى.'}
+finally{btn.disabled=false}
 }
+
 async function adminLogout(){
-await supabaseClient.auth.signOut();document.getElementById('adminCard').classList.add('hidden');document.getElementById('adminLoginCard').classList.remove('hidden');
-document.getElementById('adminPassword').value='';document.getElementById('adminMsg').textContent='تم تسجيل الخروج.';
+await supabaseClient.auth.signOut();
+document.getElementById('adminCard').classList.add('hidden');
+document.getElementById('adminLoginCard').classList.remove('hidden');
+document.getElementById('adminPassword').value='';
+document.getElementById('adminMsg').textContent='تم تسجيل الخروج.';
 }
+
 async function renderSubjects(){
-const box=document.getElementById('subjectList');box.innerHTML='<p class="muted">جارٍ تحميل المواد...</p>';
+const box=document.getElementById('subjectList');
+box.innerHTML='<p class="muted">جارٍ تحميل المواد...</p>';
 const names=activeLevel==='first'?['مبادئ قانون','مهارات اتصال','تفكير ابتكاري','إنجليزي','مبادئ اقتصاد']:[];
 const {data:subjects,error}=await supabaseClient.from('subjects').select('id,name,level').eq('level',activeLevel).order('created_at',{ascending:true});
 if(error){box.innerHTML='<p>تعذر تحميل المواد. تأكد من الاتصال وحاول مرة أخرى.</p>';return}
 box.innerHTML='';
 const shown=new Set();
 names.forEach(name=>{
-shown.add(name);const available=name==='مبادئ قانون'||name==='مهارات اتصال';
+shown.add(name);
+const available=name==='مبادئ قانون'||name==='مهارات اتصال';
 const count=name==='مبادئ قانون'?'20 اختيار من متعدد + 20 صح وغلط':'53 اختيار من متعدد + 80 صح وغلط';
-const d=document.createElement('div');d.className='subject';const info=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small');
+const d=document.createElement('div');d.className='subject';
+const info=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small');
 strong.textContent=name;small.textContent=available?count:'بنك الأسئلة قيد الإضافة';info.append(strong,small);
-const b=document.createElement('button');b.textContent=available?'ابدأ الاختبار':'قريباً';b.disabled=!available;b.onclick=()=>startExam(name);d.append(info,b);box.append(d);
+const b=document.createElement('button');b.textContent=available?'ابدأ الاختبار':'قريباً';b.disabled=!available;b.onclick=()=>startExam(name);
+d.append(info,b);box.append(d);
 });
-(subjects||[]).forEach(s=>{if(shown.has(s.name))return;const d=document.createElement('div');d.className='subject';const info=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small');
-strong.textContent=s.name;small.textContent='بنك الأسئلة قيد الإضافة';info.append(strong,small);const b=document.createElement('button');b.textContent='قريباً';b.disabled=true;d.append(info,b);box.append(d)});
+(subjects||[]).forEach(s=>{
+if(shown.has(s.name))return;
+const d=document.createElement('div');d.className='subject';
+const info=document.createElement('div'),strong=document.createElement('strong'),small=document.createElement('small');
+strong.textContent=s.name;small.textContent='بنك الأسئلة قيد الإضافة';info.append(strong,small);
+const b=document.createElement('button');b.textContent='قريباً';b.disabled=true;
+d.append(info,b);box.append(d);
+});
 if(names.length===0&&(!subjects||subjects.length===0))box.innerHTML='<p class="muted">لا توجد مواد مضافة لهذه الفرقة حتى الآن.</p>';
 }
+
 function startExam(name){
 if(name==='مبادئ قانون')currentExam=[...exams['مبادئ قانون'],...exams['صح وغلط مبادئ قانون']];
 else if(name==='مهارات اتصال')currentExam=[...exams['مهارات اتصال'],...exams['صح وغلط مهارات اتصال']];
 else return;
-currentSubject=name;document.getElementById('studentCard').classList.add('hidden');document.getElementById('examCard').classList.remove('hidden');
-document.getElementById('examTitle').textContent=name;document.getElementById('examInfo').textContent='عدد الأسئلة: '+currentExam.length+' — اختر إجابة واحدة لكل سؤال.';
-document.getElementById('resultBox').classList.add('hidden');document.getElementById('submitBtn').disabled=false;
+currentSubject=name;
+document.getElementById('studentCard').classList.add('hidden');
+document.getElementById('examCard').classList.remove('hidden');
+document.getElementById('examTitle').textContent=name;
+document.getElementById('examInfo').textContent='عدد الأسئلة: '+currentExam.length+' — اختر إجابة واحدة لكل سؤال.';
+document.getElementById('resultBox').classList.add('hidden');
+document.getElementById('submitBtn').disabled=false;
 const box=document.getElementById('questions');box.innerHTML='';
 currentExam.forEach((q,i)=>{
-const d=document.createElement('div');d.className='question';const h=document.createElement('h3');h.textContent=(i+1)+'. '+q.q;d.append(h);
-(q.o||['صح','خطأ']).forEach((opt,j)=>{const label=document.createElement('label');label.className='option';const input=document.createElement('input');input.type='radio';input.name='q'+i;input.value=j;label.append(input,document.createTextNode(opt));d.append(label)});
+const d=document.createElement('div');d.className='question';
+const h=document.createElement('h3');h.textContent=(i+1)+'. '+q.q;d.append(h);
+(q.o||['صح','خطأ']).forEach((opt,j)=>{
+const label=document.createElement('label');label.className='option';
+const input=document.createElement('input');input.type='radio';input.name='q'+i;input.value=j;
+label.append(input,document.createTextNode(opt));d.append(label);
+});
 box.append(d);
 });
 }
+
 function submitExam(){
 let score=0;
 currentExam.forEach((q,i)=>{
-const chosen=document.querySelector('input[name="q'+i+'"]:checked'),value=chosen?Number(chosen.value):null,correct=q.o?q.a:(q.a?0:1);
+const chosen=document.querySelector('input[name="q'+i+'"]:checked');
+const value=chosen?Number(chosen.value):null;
+const correct=q.o?q.a:(q.a?0:1);
 if(value===correct)score++;
 const labels=[...document.querySelectorAll('input[name="q'+i+'"]')].map(input=>input.closest('label'));
-labels.forEach((label,j)=>{if(j===correct)label.classList.add('correct');if(value===j&&value!==correct)label.classList.add('wrong');label.querySelector('input').disabled=true});
-const questionBox=document.querySelectorAll('.question')[i],answer=document.createElement('p');answer.className='answer-key';
-answer.textContent='الإجابة الصحيحة: '+(q.o?q.o[q.a]:(q.a?'صح':'خطأ'));questionBox.append(answer);
+labels.forEach((label,j)=>{
+if(j===correct)label.classList.add('correct');
+if(value===j&&value!==correct)label.classList.add('wrong');
+label.querySelector('input').disabled=true;
+});
+const questionBox=document.querySelectorAll('.question')[i];
+const answer=document.createElement('p');answer.className='answer-key';
+answer.textContent='الإجابة الصحيحة: '+(q.o?q.o[q.a]:(q.a?'صح':'خطأ'));
+questionBox.append(answer);
 });
 document.getElementById('result').textContent='نتيجتك: '+score+' من '+currentExam.length;
-document.getElementById('resultBox').classList.remove('hidden');document.getElementById('submitBtn').disabled=true;
+document.getElementById('resultBox').classList.remove('hidden');
+document.getElementById('submitBtn').disabled=true;
 }
-function backToSubjects(){document.getElementById('examCard').classList.add('hidden');document.getElementById('studentCard').classList.remove('hidden')}
+
+function backToSubjects(){
+document.getElementById('examCard').classList.add('hidden');
+document.getElementById('studentCard').classList.remove('hidden');
+}
+
 async function addSubject(){
-const name=document.getElementById('subjectName').value.trim(),level=document.getElementById('adminLevel').value,msg=document.getElementById('adminList'),btn=document.getElementById('addSubjectBtn');
-if(!name){alert('اكتب اسم المادة');return}btn.disabled=true;msg.textContent='جارٍ إضافة المادة...';
+const name=document.getElementById('subjectName').value.trim();
+const level=document.getElementById('adminLevel').value;
+const msg=document.getElementById('adminList');
+const btn=document.getElementById('addSubjectBtn');
+if(!name){alert('اكتب اسم المادة');return}
+btn.disabled=true;msg.textContent='جارٍ إضافة المادة...';
 try{
-const {data:{user},error:userError}=await supabaseClient.auth.getUser();if(userError||!user){msg.textContent='انتهت جلسة الإدارة. سجل الدخول مرة أخرى.';return}
+const {data:{user},error:userError}=await supabaseClient.auth.getUser();
+if(userError||!user){msg.textContent='انتهت جلسة الإدارة. سجل الدخول مرة أخرى.';return}
 const {error}=await supabaseClient.from('subjects').insert({name,level,created_by:user.id});
 if(error){msg.textContent=error.code==='23505'?'هذه المادة موجودة بالفعل في نفس الفرقة.':'تعذرت إضافة المادة: '+error.message;return}
-document.getElementById('subjectName').value='';msg.textContent='تمت إضافة المادة بنجاح.';await renderAdmin();if(activeLevel===level)await renderSubjects();
-}catch(e){msg.textContent='حدث خطأ أثناء إضافة المادة.'}finally{btn.disabled=false}
+document.getElementById('subjectName').value='';
+msg.textContent='تمت إضافة المادة بنجاح.';
+await renderAdmin();if(activeLevel===level)await renderSubjects();
+}catch(e){msg.textContent='حدث خطأ أثناء إضافة المادة.'}
+finally{btn.disabled=false}
 }
+
+async function renderVisits(){
+const box=document.getElementById('visitsList');
+if(!box)return;
+box.innerHTML='<p class="muted">جارٍ تحميل سجل الزيارات...</p>';
+try{
+const {data:visits,error}=await supabaseClient.from('site_visits').select('student_id,event_type,visited_at').order('visited_at',{ascending:false}).limit(200);
+if(error){box.textContent='تعذر تحميل سجل الزيارات. تأكد من تسجيل دخول الإدارة.';console.error(error);return}
+if(!visits||visits.length===0){box.innerHTML='<p class="muted">لا توجد زيارات مسجلة حتى الآن.</p>';return}
+const ids=[...new Set(visits.map(v=>v.student_id).filter(Boolean))];
+let names={};
+if(ids.length){
+const {data:students,error:studentsError}=await supabaseClient.from('students').select('id,full_name').in('id',ids);
+if(studentsError){box.textContent='تعذر تحميل أسماء الطلاب.';console.error(studentsError);return}
+(students||[]).forEach(student=>{names[student.id]=student.full_name});
+}
+const table=document.createElement('table');
+table.style.width='100%';table.style.borderCollapse='collapse';
+const header=document.createElement('tr');
+['اسم الطالب','نوع الحدث','تاريخ ووقت الدخول'].forEach(label=>{
+const th=document.createElement('th');th.textContent=label;th.style.textAlign='right';
+th.style.padding='9px 6px';th.style.borderBottom='1px solid #cbd5e1';header.append(th);
+});
+table.append(header);
+visits.forEach(visit=>{
+const tr=document.createElement('tr');
+const values=[
+names[visit.student_id]||'اسم غير متاح',
+visit.event_type==='platform_login'?'دخول المنصة':(visit.event_type||'زيارة'),
+visit.visited_at?new Date(visit.visited_at).toLocaleString('ar-EG'):'—'
+];
+values.forEach(value=>{
+const td=document.createElement('td');td.textContent=value;
+td.style.padding='9px 6px';td.style.borderBottom='1px solid #e2e8f0';tr.append(td);
+});
+table.append(tr);
+});
+box.innerHTML='';box.append(table);
+}catch(e){console.error(e);box.textContent='حدث خطأ أثناء تحميل سجل الزيارات.'}
+}
+
 async function renderAdmin(){
-const box=document.getElementById('adminList');box.innerHTML='<p class="muted">جارٍ تحميل المواد...</p>';
+const box=document.getElementById('adminList');
+box.innerHTML='<p class="muted">جارٍ تحميل المواد...</p>';
 const {data:subjects,error}=await supabaseClient.from('subjects').select('id,name,level').order('created_at',{ascending:true});
-if(error){box.textContent='تعذر تحميل المواد: '+error.message;return}box.innerHTML='';
+if(error){box.textContent='تعذر تحميل المواد: '+error.message;return}
+box.innerHTML='';
 if(!subjects||subjects.length===0){box.innerHTML='<p class="muted">لا توجد مواد إضافية حتى الآن.</p>';return}
 subjects.forEach(subject=>{
-const d=document.createElement('div');d.className='subject';const t=document.createElement('span');t.textContent=subject.name+' - '+(subject.level==='first'?'الفرقة الأولى':'الفرقة الثانية');
-const b=document.createElement('button');b.className='secondary';b.textContent='حذف';b.onclick=async()=>{
-if(!confirm('هل أنت متأكد من حذف مادة '+subject.name+'؟'))return;b.disabled=true;b.textContent='جارٍ الحذف...';
+const d=document.createElement('div');d.className='subject';
+const t=document.createElement('span');
+t.textContent=subject.name+' - '+(subject.level==='first'?'الفرقة الأولى':'الفرقة الثانية');
+const b=document.createElement('button');b.className='secondary';b.textContent='حذف';
+b.onclick=async()=>{
+if(!confirm('هل أنت متأكد من حذف مادة '+subject.name+'؟'))return;
+b.disabled=true;b.textContent='جارٍ الحذف...';
 const {error:deleteError}=await supabaseClient.from('subjects').delete().eq('id',subject.id);
 if(deleteError){alert('تعذر حذف المادة: '+deleteError.message);b.disabled=false;b.textContent='حذف';return}
 await renderAdmin();if(activeLevel===subject.level)await renderSubjects();
-};d.append(t,b);box.append(d);
+};
+d.append(t,b);box.append(d);
 });
 }
 </script>
