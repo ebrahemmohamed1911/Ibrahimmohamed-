@@ -6,47 +6,119 @@
 <meta name="theme-color" content="#12345a">
 <title>بوابة الامتحانات</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f1f5f9;color:#172b4d;font-family:Tahoma,Arial;line-height:1.7}
+*{box-sizing:border-box}
+body{margin:0;background:#f1f5f9;color:#172b4d;font-family:Tahoma,Arial;line-height:1.7}
 header{background:linear-gradient(135deg,#12345a,#2563eb);color:#fff;padding:28px 16px;text-align:center}
-header h1{margin:0;font-size:28px}header p{margin:5px 0 0;color:#dbeafe}
-main{max-width:850px;margin:22px auto;padding:0 14px}.card{background:#fff;padding:20px;margin:0 0 16px;border-radius:16px;box-shadow:0 4px 16px #0f172a12}
-h2{color:#1d4ed8;margin-top:0;font-size:21px}input,select{width:100%;padding:13px;margin:7px 0;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff}
+header h1{margin:0;font-size:28px}
+header p{margin:5px 0 0;color:#dbeafe}
+main{max-width:850px;margin:22px auto;padding:0 14px}
+.card{background:#fff;padding:20px;margin:0 0 16px;border-radius:16px;box-shadow:0 4px 16px #0f172a12}
+h2{color:#1d4ed8;margin-top:0;font-size:21px}
+input,select{width:100%;padding:13px;margin:7px 0;border:1px solid #cbd5e1;border-radius:10px;font-size:16px;background:#fff}
 button{background:#2563eb;color:#fff;border:0;padding:12px 18px;border-radius:10px;margin:5px 0;cursor:pointer;font-size:15px;font-weight:bold}
-button.secondary{background:#e2e8f0;color:#12345a}button:disabled{opacity:.45;cursor:not-allowed}
+button.secondary{background:#e2e8f0;color:#12345a}
+button:disabled{opacity:.45;cursor:not-allowed}
 .subject{padding:14px;border:1px solid #e2e8f0;border-radius:12px;margin:10px 0;display:flex;justify-content:space-between;align-items:center;gap:12px}
-.subject small{display:block;color:#64748b}.hidden{display:none!important}.muted{color:#64748b}.question{padding:16px 0;border-bottom:1px solid #e2e8f0}.question h3{font-size:17px;margin:0 0 10px}
-.option{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border:1px solid #e2e8f0;border-radius:9px;margin:7px 0;cursor:pointer}.option input{width:auto;margin:5px 0 0}.correct{border-color:#16a34a;background:#f0fdf4}.wrong{border-color:#dc2626;background:#fef2f2}.answer-key{color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 12px;border-radius:9px;font-weight:bold;margin:10px 0 0}
-#result{font-size:20px;font-weight:bold;color:#12345a}footer{text-align:center;color:#64748b;padding:10px 0 28px;font-size:13px}
+.subject small{display:block;color:#64748b}
+.hidden{display:none!important}
+.muted{color:#64748b}
+.question{padding:16px 0;border-bottom:1px solid #e2e8f0}
+.question h3{font-size:17px;margin:0 0 10px}
+.option{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border:1px solid #e2e8f0;border-radius:9px;margin:7px 0;cursor:pointer}
+.option input{width:auto;margin:5px 0 0}
+.correct{border-color:#16a34a;background:#f0fdf4}
+.wrong{border-color:#dc2626;background:#fef2f2}
+.answer-key{color:#15803d;background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 12px;border-radius:9px;font-weight:bold;margin:10px 0 0}
+#result{font-size:20px;font-weight:bold;color:#12345a}
+footer{text-align:center;color:#64748b;padding:10px 0 28px;font-size:13px}
 </style>
 </head>
 <body>
-<header><h1>📚 بوابة الامتحانات</h1><p>منصتك الإلكترونية للاختبارات والمراجعة</p></header>
+
+<header>
+<h1>📚 بوابة الامتحانات</h1>
+<p>منصتك الإلكترونية للاختبارات والمراجعة</p>
+</header>
+
 <main>
+
 <section class="card" id="loginCard">
-<h2>دخول الطالب</h2><p class="muted">اكتب كود التفعيل واختر الفرقة الدراسية.</p>
+<h2>دخول الطالب</h2>
+<p class="muted">اكتب كود التفعيل واختر الفرقة الدراسية.</p>
 <input id="code" placeholder="كود التفعيل" autocomplete="off">
-<select id="level"><option value="">اختر الفرقة الدراسية</option><option value="first">الفرقة الأولى</option><option value="second">الفرقة الثانية</option></select>
-<button onclick="login()">دخول المنصة</button><p id="msg" role="status"></p>
+<select id="level">
+<option value="">اختر الفرقة الدراسية</option>
+<option value="first">الفرقة الأولى</option>
+<option value="second">الفرقة الثانية</option>
+</select>
+<button onclick="login()">دخول المنصة</button>
+<p id="msg" role="status"></p>
 </section>
+
+<section class="card" id="adminLoginCard">
+<h2>دخول الإدارة</h2>
+<p class="muted">الدخول مخصص لحساب الإدارة فقط.</p>
+<input id="adminEmail" type="email" placeholder="البريد الإلكتروني" autocomplete="username">
+<input id="adminPassword" type="password" placeholder="كلمة المرور" autocomplete="current-password">
+<button id="adminLoginBtn" onclick="adminLogin()">دخول الإدارة</button>
+<p id="adminMsg" role="status"></p>
+</section>
+
 <section class="card hidden" id="studentCard">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 id="levelTitle" style="margin:0">مواد الفرقة الأولى</h2><button class="secondary" onclick="logout()">خروج</button></div>
-<p class="muted">اختر المادة لبدء الاختبار. يتم عرض النتيجة والإجابات الصحيحة بعد التسليم.</p><div id="subjectList"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+<h2 id="levelTitle" style="margin:0">مواد الفرقة الأولى</h2>
+<button class="secondary" onclick="logout()">خروج</button>
+</div>
+<p class="muted">اختر المادة لبدء الاختبار. يتم عرض النتيجة والإجابات الصحيحة بعد التسليم.</p>
+<div id="subjectList"></div>
 </section>
+
 <section class="card hidden" id="examCard">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h2 id="examTitle" style="margin:0"></h2><button class="secondary" onclick="backToSubjects()">العودة للمواد</button></div>
-<p id="examInfo" class="muted"></p><div id="questions"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+<h2 id="examTitle" style="margin:0"></h2>
+<button class="secondary" onclick="backToSubjects()">العودة للمواد</button>
+</div>
+<p id="examInfo" class="muted"></p>
+<div id="questions"></div>
 <button id="submitBtn" onclick="submitExam()">تسليم الإجابات وحساب الدرجة</button>
-<div id="resultBox" class="hidden"><hr><p id="result"></p><div id="review"></div><button onclick="backToSubjects()">العودة للمواد</button></div>
+<div id="resultBox" class="hidden">
+<hr>
+<p id="result"></p>
+<div id="review"></div>
+<button onclick="backToSubjects()">العودة للمواد</button>
+</div>
 </section>
+
 <section class="card hidden" id="adminCard">
-<h2>لوحة الإدارة</h2><p class="muted">إضافة أسماء مواد جديدة للعرض على الطلاب. بنك أسئلتها يُضاف بعد إدخال الأسئلة والإجابات.</p>
-<select id="adminLevel"><option value="first">الفرقة الأولى</option><option value="second">الفرقة الثانية</option></select>
-<input id="subjectName" placeholder="اسم المادة"><button onclick="addSubject()">إضافة المادة</button><div id="adminList"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
+<h2>لوحة الإدارة</h2>
+<button class="secondary" onclick="adminLogout()">خروج الإدارة</button>
+</div>
+<p class="muted">إضافة أسماء مواد جديدة للعرض على الطلاب. بنك أسئلتها يُضاف بعد إدخال الأسئلة والإجابات.</p>
+<select id="adminLevel">
+<option value="first">الفرقة الأولى</option>
+<option value="second">الفرقة الثانية</option>
+</select>
+<input id="subjectName" placeholder="اسم المادة">
+<button onclick="addSubject()">إضافة المادة</button>
+<div id="adminList"></div>
 </section>
+
 <footer>بوابة الامتحانات © 2026</footer>
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const SUPABASE_URL='https://hpigmwchxvoojururlqg.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY='sb_publishable_qzrN3jBDuEtC5l4g5Gvu_Q_rmPhkxhf';
+
+const supabaseClient=window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_PUBLISHABLE_KEY
+);
+
 const ACCESS_CODE='EXAM2026';
+
 const exams={
 'مبادئ قانون':[
 {q:'من خصائص القاعدة القانونية وتتحقق عند وضعها وقبل تطبيقها:',o:['العمومية','التجريد','التنظيم','ليس أياً مما سبق'],a:1},
@@ -91,40 +163,274 @@ const exams={
 {q:'الدستور صورة من صور التشريعات.',a:true},
 {q:'تعد قواعد العدالة من المصادر الاحتياطية للقانون.',a:true},
 {q:'رئيس الجمهورية هو الرئيس الأعلى للسلطة القضائية.',a:false}
-]};
-let activeLevel='first',currentExam=[],extraSubjects=JSON.parse(localStorage.getItem('extraSubjects')||'[]');
-function login(){const code=document.getElementById('code').value.trim(),level=document.getElementById('level').value,msg=document.getElementById('msg');if(!code||!level){msg.textContent='أدخل كود التفعيل واختر الفرقة.';return;}if(code!==ACCESS_CODE){msg.textContent='كود التفعيل غير صحيح.';return;}activeLevel=level;document.getElementById('loginCard').classList.add('hidden');document.getElementById('studentCard').classList.remove('hidden');document.getElementById('adminCard').classList.remove('hidden');document.getElementById('levelTitle').textContent=level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';renderSubjects();}
-function logout(){['studentCard','adminCard','examCard'].forEach(id=>document.getElementById(id).classList.add('hidden'));document.getElementById('loginCard').classList.remove('hidden');document.getElementById('code').value='';}
-function renderSubjects(){const box=document.getElementById('subjectList');box.innerHTML='';const names=activeLevel==='first'?['مبادئ قانون','مهارات اتصال','تفكير ابتكاري','إنجليزي','مبادئ اقتصاد']:[];names.forEach(name=>{const ready=name==='مبادئ قانون';const d=document.createElement('div');d.className='subject';const info=document.createElement('div');const strong=document.createElement('strong');strong.textContent=name;const small=document.createElement('small');small.textContent=ready?'20 اختيار من متعدد + 20 صح وغلط':'بنك الأسئلة قيد الإضافة';info.append(strong,small);const b=document.createElement('button');b.textContent=ready?'ابدأ الاختبار':'قريباً';b.disabled=!ready;b.onclick=()=>startExam(name);d.append(info,b);box.append(d);});extraSubjects.filter(x=>x.level===activeLevel).forEach(x=>{const d=document.createElement('div');d.className='subject';d.textContent=x.name+' — بنك الأسئلة قيد الإضافة';box.append(d);});}
-function startExam(name){currentExam=[...exams['مبادئ قانون'],...exams['صح وغلط مبادئ قانون']];document.getElementById('studentCard').classList.add('hidden');document.getElementById('adminCard').classList.add('hidden');document.getElementById('examCard').classList.remove('hidden');document.getElementById('examTitle').textContent=name;document.getElementById('examInfo').textContent='عدد الأسئلة: '+currentExam.length+' — اختر إجابة واحدة لكل سؤال.';document.getElementById('resultBox').classList.add('hidden');document.getElementById('submitBtn').disabled=false;const box=document.getElementById('questions');box.innerHTML='';currentExam.forEach((q,i)=>{const d=document.createElement('div');d.className='question';const h=document.createElement('h3');h.textContent=(i+1)+'. '+q.q;d.append(h);(q.o||['صح','خطأ']).forEach((opt,j)=>{const label=document.createElement('label');label.className='option';const input=document.createElement('input');input.type='radio';input.name='q'+i;input.value=j;label.append(input,document.createTextNode(opt));d.append(label);});box.append(d);});}
-function submitExam(){
- let score=0;
- currentExam.forEach((q,i)=>{
-   const chosen=document.querySelector('input[name="q'+i+'"]:checked');
-   const value=chosen?Number(chosen.value):null;
-   const correct=q.o?q.a:(q.a?0:1);
-   if(value===correct) score++;
+]
+};
 
-   const labels=[...document.querySelectorAll('input[name="q'+i+'"]')].map(input=>input.closest('label'));
-   labels.forEach((label,j)=>{
-     if(j===correct) label.classList.add('correct');
-     if(value===j && value!==correct) label.classList.add('wrong');
-     label.querySelector('input').disabled=true;
-   });
+let activeLevel='first';
+let currentExam=[];
+let extraSubjects=JSON.parse(localStorage.getItem('extraSubjects')||'[]');
 
-   const questionBox=document.querySelectorAll('.question')[i];
-   const answer=document.createElement('p');
-   answer.className='answer-key';
-   answer.textContent='الإجابة الصحيحة: '+(q.o?q.o[q.a]:(q.a?'صح':'خطأ'));
-   questionBox.append(answer);
- });
- document.getElementById('result').textContent='نتيجتك: '+score+' من '+currentExam.length;
- document.getElementById('resultBox').classList.remove('hidden');
- document.getElementById('submitBtn').disabled=true;
+function login(){
+const code=document.getElementById('code').value.trim();
+const level=document.getElementById('level').value;
+const msg=document.getElementById('msg');
+
+if(!code||!level){
+msg.textContent='أدخل كود التفعيل واختر الفرقة.';
+return;
 }
-function backToSubjects(){document.getElementById('examCard').classList.add('hidden');document.getElementById('studentCard').classList.remove('hidden');document.getElementById('adminCard').classList.remove('hidden');}
-function addSubject(){const name=document.getElementById('subjectName').value.trim(),level=document.getElementById('adminLevel').value;if(!name){alert('اكتب اسم المادة');return;}extraSubjects.push({name,level});localStorage.setItem('extraSubjects',JSON.stringify(extraSubjects));document.getElementById('subjectName').value='';renderSubjects();renderAdmin();}
-function renderAdmin(){const box=document.getElementById('adminList');box.innerHTML='';extraSubjects.forEach((s,i)=>{const d=document.createElement('div');d.className='subject';const t=document.createElement('span');t.textContent=s.name+' - '+(s.level==='first'?'الفرقة الأولى':'الفرقة الثانية');const b=document.createElement('button');b.className='secondary';b.textContent='حذف';b.onclick=()=>{extraSubjects.splice(i,1);localStorage.setItem('extraSubjects',JSON.stringify(extraSubjects));renderSubjects();renderAdmin();};d.append(t,b);box.append(d);});}
+if(code!==ACCESS_CODE){
+msg.textContent='كود التفعيل غير صحيح.';
+return;
+}
+
+activeLevel=level;
+document.getElementById('loginCard').classList.add('hidden');
+document.getElementById('adminLoginCard').classList.add('hidden');
+document.getElementById('studentCard').classList.remove('hidden');
+document.getElementById('levelTitle').textContent=
+level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';
+renderSubjects();
+}
+
+function logout(){
+['studentCard','examCard'].forEach(id=>
+document.getElementById(id).classList.add('hidden')
+);
+document.getElementById('loginCard').classList.remove('hidden');
+document.getElementById('adminLoginCard').classList.remove('hidden');
+document.getElementById('code').value='';
+document.getElementById('msg').textContent='';
+}
+
+async function adminLogin(){
+const email=document.getElementById('adminEmail').value.trim();
+const password=document.getElementById('adminPassword').value;
+const msg=document.getElementById('adminMsg');
+const btn=document.getElementById('adminLoginBtn');
+
+if(!email||!password){
+msg.textContent='اكتب البريد الإلكتروني وكلمة المرور.';
+return;
+}
+
+btn.disabled=true;
+msg.textContent='جارٍ التحقق من الحساب...';
+
+try{
+const {data,error}=await supabaseClient.auth.signInWithPassword({
+email:email,
+password:password
+});
+
+if(error||!data.user){
+msg.textContent='تعذر تسجيل الدخول. راجع بيانات الحساب.';
+return;
+}
+
+const {data:admin,error:checkError}=await supabaseClient
+.from('admin_users')
+.select('user_id')
+.eq('user_id',data.user.id)
+.maybeSingle();
+
+if(checkError||!admin){
+await supabaseClient.auth.signOut();
+msg.textContent='هذا الحساب غير مسجل كحساب إدارة.';
+return;
+}
+
+document.getElementById('adminLoginCard').classList.add('hidden');
+document.getElementById('loginCard').classList.add('hidden');
+document.getElementById('adminCard').classList.remove('hidden');
+renderAdmin();
+msg.textContent='';
+
+}catch(error){
+msg.textContent='حدث خطأ في الاتصال. حاول مرة أخرى.';
+}finally{
+btn.disabled=false;
+}
+}
+
+async function adminLogout(){
+await supabaseClient.auth.signOut();
+document.getElementById('adminCard').classList.add('hidden');
+document.getElementById('adminLoginCard').classList.remove('hidden');
+document.getElementById('adminPassword').value='';
+document.getElementById('adminMsg').textContent='تم تسجيل الخروج.';
+}
+
+function renderSubjects(){
+const box=document.getElementById('subjectList');
+box.innerHTML='';
+
+const names=activeLevel==='first'
+?['مبادئ قانون','مهارات اتصال','تفكير ابتكاري','إنجليزي','مبادئ اقتصاد']
+:[];
+
+names.forEach(name=>{
+const ready=name==='مبادئ قانون';
+const d=document.createElement('div');
+d.className='subject';
+
+const info=document.createElement('div');
+const strong=document.createElement('strong');
+strong.textContent=name;
+
+const small=document.createElement('small');
+small.textContent=ready
+?'20 اختيار من متعدد + 20 صح وغلط'
+:'بنك الأسئلة قيد الإضافة';
+
+info.append(strong,small);
+
+const b=document.createElement('button');
+b.textContent=ready?'ابدأ الاختبار':'قريباً';
+b.disabled=!ready;
+b.onclick=()=>startExam(name);
+
+d.append(info,b);
+box.append(d);
+});
+
+extraSubjects.filter(x=>x.level===activeLevel).forEach(x=>{
+const d=document.createElement('div');
+d.className='subject';
+d.textContent=x.name+' — بنك الأسئلة قيد الإضافة';
+box.append(d);
+});
+}
+
+function startExam(name){
+currentExam=[
+...exams['مبادئ قانون'],
+...exams['صح وغلط مبادئ قانون']
+];
+
+document.getElementById('studentCard').classList.add('hidden');
+document.getElementById('examCard').classList.remove('hidden');
+
+document.getElementById('examTitle').textContent=name;
+document.getElementById('examInfo').textContent=
+'عدد الأسئلة: '+currentExam.length+' — اختر إجابة واحدة لكل سؤال.';
+
+document.getElementById('resultBox').classList.add('hidden');
+document.getElementById('submitBtn').disabled=false;
+
+const box=document.getElementById('questions');
+box.innerHTML='';
+
+currentExam.forEach((q,i)=>{
+const d=document.createElement('div');
+d.className='question';
+
+const h=document.createElement('h3');
+h.textContent=(i+1)+'. '+q.q;
+d.append(h);
+
+(q.o||['صح','خطأ']).forEach((opt,j)=>{
+const label=document.createElement('label');
+label.className='option';
+
+const input=document.createElement('input');
+input.type='radio';
+input.name='q'+i;
+input.value=j;
+
+label.append(input,document.createTextNode(opt));
+d.append(label);
+});
+
+box.append(d);
+});
+}
+
+function submitExam(){
+let score=0;
+
+currentExam.forEach((q,i)=>{
+const chosen=document.querySelector('input[name="q'+i+'"]:checked');
+const value=chosen?Number(chosen.value):null;
+const correct=q.o?q.a:(q.a?0:1);
+
+if(value===correct)score++;
+
+const labels=[
+...document.querySelectorAll('input[name="q'+i+'"]')
+].map(input=>input.closest('label'));
+
+labels.forEach((label,j)=>{
+if(j===correct)label.classList.add('correct');
+if(value===j&&value!==correct)label.classList.add('wrong');
+label.querySelector('input').disabled=true;
+});
+
+const questionBox=document.querySelectorAll('.question')[i];
+const answer=document.createElement('p');
+answer.className='answer-key';
+answer.textContent='الإجابة الصحيحة: '+
+(q.o?q.o[q.a]:(q.a?'صح':'خطأ'));
+questionBox.append(answer);
+});
+
+document.getElementById('result').textContent=
+'نتيجتك: '+score+' من '+currentExam.length;
+
+document.getElementById('resultBox').classList.remove('hidden');
+document.getElementById('submitBtn').disabled=true;
+}
+
+function backToSubjects(){
+document.getElementById('examCard').classList.add('hidden');
+document.getElementById('studentCard').classList.remove('hidden');
+}
+
+function addSubject(){
+const name=document.getElementById('subjectName').value.trim();
+const level=document.getElementById('adminLevel').value;
+
+if(!name){
+alert('اكتب اسم المادة');
+return;
+}
+
+extraSubjects.push({name,level});
+localStorage.setItem('extraSubjects',JSON.stringify(extraSubjects));
+document.getElementById('subjectName').value='';
+renderSubjects();
+renderAdmin();
+}
+
+function renderAdmin(){
+const box=document.getElementById('adminList');
+box.innerHTML='';
+
+extraSubjects.forEach((s,i)=>{
+const d=document.createElement('div');
+d.className='subject';
+
+const t=document.createElement('span');
+t.textContent=s.name+' - '+
+(s.level==='first'?'الفرقة الأولى':'الفرقة الثانية');
+
+const b=document.createElement('button');
+b.className='secondary';
+b.textContent='حذف';
+
+b.onclick=()=>{
+extraSubjects.splice(i,1);
+localStorage.setItem('extraSubjects',JSON.stringify(extraSubjects));
+renderSubjects();
+renderAdmin();
+};
+
+d.append(t,b);
+box.append(d);
+});
+}
+
 renderAdmin();
 </script>
-</body></html>
+</body>
+</html>
