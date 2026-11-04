@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -100,7 +101,7 @@ footer{text-align:center;color:#64748b;padding:10px 0 28px;font-size:13px}
 <option value="second">الفرقة الثانية</option>
 </select>
 <input id="subjectName" placeholder="اسم المادة">
-<button onclick="addSubject()">إضافة المادة</button>
+<button id="addSubjectBtn" onclick="addSubject()">إضافة المادة</button>
 <div id="adminList"></div>
 </section>
 
@@ -168,9 +169,8 @@ const exams={
 
 let activeLevel='first';
 let currentExam=[];
-let extraSubjects=JSON.parse(localStorage.getItem('extraSubjects')||'[]');
 
-function login(){
+async function login(){
 const code=document.getElementById('code').value.trim();
 const level=document.getElementById('level').value;
 const msg=document.getElementById('msg');
@@ -190,7 +190,8 @@ document.getElementById('adminLoginCard').classList.add('hidden');
 document.getElementById('studentCard').classList.remove('hidden');
 document.getElementById('levelTitle').textContent=
 level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';
-renderSubjects();
+
+await renderSubjects();
 }
 
 function logout(){
@@ -243,7 +244,7 @@ return;
 document.getElementById('adminLoginCard').classList.add('hidden');
 document.getElementById('loginCard').classList.add('hidden');
 document.getElementById('adminCard').classList.remove('hidden');
-renderAdmin();
+await renderAdmin();
 msg.textContent='';
 
 }catch(error){
@@ -261,13 +262,26 @@ document.getElementById('adminPassword').value='';
 document.getElementById('adminMsg').textContent='تم تسجيل الخروج.';
 }
 
-function renderSubjects(){
+async function renderSubjects(){
 const box=document.getElementById('subjectList');
-box.innerHTML='';
+box.innerHTML='<p class="muted">جارٍ تحميل المواد...</p>';
 
 const names=activeLevel==='first'
 ?['مبادئ قانون','مهارات اتصال','تفكير ابتكاري','إنجليزي','مبادئ اقتصاد']
 :[];
+
+const {data:subjects,error}=await supabaseClient
+.from('subjects')
+.select('id,name,level')
+.eq('level',activeLevel)
+.order('created_at',{ascending:true});
+
+if(error){
+box.innerHTML='<p>تعذر تحميل المواد. تأكد من الاتصال وحاول مرة أخرى.</p>';
+return;
+}
+
+box.innerHTML='';
 
 names.forEach(name=>{
 const ready=name==='مبادئ قانون';
@@ -294,15 +308,34 @@ d.append(info,b);
 box.append(d);
 });
 
-extraSubjects.filter(x=>x.level===activeLevel).forEach(x=>{
+(subjects||[]).forEach(subject=>{
 const d=document.createElement('div');
 d.className='subject';
-d.textContent=x.name+' — بنك الأسئلة قيد الإضافة';
+
+const info=document.createElement('div');
+const strong=document.createElement('strong');
+strong.textContent=subject.name;
+const small=document.createElement('small');
+small.textContent='بنك الأسئلة قيد الإضافة';
+
+info.append(strong,small);
+
+const b=document.createElement('button');
+b.textContent='قريباً';
+b.disabled=true;
+
+d.append(info,b);
 box.append(d);
 });
+
+if(names.length===0&&(!subjects||subjects.length===0)){
+box.innerHTML='<p class="muted">لا توجد مواد مضافة لهذه الفرقة حتى الآن.</p>';
+}
 }
 
 function startExam(name){
+if(name!=='مبادئ قانون')return;
+
 currentExam=[
 ...exams['مبادئ قانون'],
 ...exams['صح وغلط مبادئ قانون']
@@ -386,51 +419,121 @@ document.getElementById('examCard').classList.add('hidden');
 document.getElementById('studentCard').classList.remove('hidden');
 }
 
-function addSubject(){
+async function addSubject(){
 const name=document.getElementById('subjectName').value.trim();
 const level=document.getElementById('adminLevel').value;
+const msg=document.getElementById('adminList');
+const btn=document.getElementById('addSubjectBtn');
 
 if(!name){
 alert('اكتب اسم المادة');
 return;
 }
 
-extraSubjects.push({name,level});
-localStorage.setItem('extraSubjects',JSON.stringify(extraSubjects));
-document.getElementById('subjectName').value='';
-renderSubjects();
-renderAdmin();
+btn.disabled=true;
+msg.textContent='جارٍ إضافة المادة...';
+
+try{
+const {data:{user},error:userError}=await supabaseClient.auth.getUser();
+
+if(userError||!user){
+msg.textContent='انتهت جلسة الإدارة. سجل الدخول مرة أخرى.';
+return;
 }
 
-function renderAdmin(){
+const {error}=await supabaseClient
+.from('subjects')
+.insert({
+name:name,
+level:level,
+created_by:user.id
+});
+
+if(error){
+if(error.code==='23505'){
+msg.textContent='هذه المادة موجودة بالفعل في نفس الفرقة.';
+}else{
+msg.textContent='تعذرت إضافة المادة: '+error.message;
+}
+return;
+}
+
+document.getElementById('subjectName').value='';
+msg.textContent='تمت إضافة المادة بنجاح.';
+await renderAdmin();
+if(activeLevel===level){
+await renderSubjects();
+}
+
+}catch(error){
+msg.textContent='حدث خطأ أثناء إضافة المادة.';
+}finally{
+btn.disabled=false;
+}
+}
+
+async function renderAdmin(){
 const box=document.getElementById('adminList');
+box.innerHTML='<p class="muted">جارٍ تحميل المواد...</p>';
+
+const {data:subjects,error}=await supabaseClient
+.from('subjects')
+.select('id,name,level')
+.order('created_at',{ascending:true});
+
+if(error){
+box.textContent='تعذر تحميل المواد: '+error.message;
+return;
+}
+
 box.innerHTML='';
 
-extraSubjects.forEach((s,i)=>{
+if(!subjects||subjects.length===0){
+box.innerHTML='<p class="muted">لا توجد مواد إضافية حتى الآن.</p>';
+return;
+}
+
+subjects.forEach(subject=>{
 const d=document.createElement('div');
 d.className='subject';
 
 const t=document.createElement('span');
-t.textContent=s.name+' - '+
-(s.level==='first'?'الفرقة الأولى':'الفرقة الثانية');
+t.textContent=subject.name+' - '+
+(subject.level==='first'?'الفرقة الأولى':'الفرقة الثانية');
 
 const b=document.createElement('button');
 b.className='secondary';
 b.textContent='حذف';
 
-b.onclick=()=>{
-extraSubjects.splice(i,1);
-localStorage.setItem('extraSubjects',JSON.stringify(extraSubjects));
-renderSubjects();
-renderAdmin();
+b.onclick=async()=>{
+if(!confirm('هل أنت متأكد من حذف مادة '+subject.name+'؟'))return;
+
+b.disabled=true;
+b.textContent='جارٍ الحذف...';
+
+const {error:deleteError}=await supabaseClient
+.from('subjects')
+.delete()
+.eq('id',subject.id);
+
+if(deleteError){
+alert('تعذر حذف المادة: '+deleteError.message);
+b.disabled=false;
+b.textContent='حذف';
+return;
+}
+
+await renderAdmin();
+
+if(activeLevel===subject.level){
+await renderSubjects();
+}
 };
 
 d.append(t,b);
 box.append(d);
 });
 }
-
-renderAdmin();
 </script>
 </body>
 </html>
