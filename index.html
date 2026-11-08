@@ -444,6 +444,22 @@ box.innerHTML='';const wrap=document.createElement('div');wrap.style.overflowX='
 }catch(e){console.error(e);box.textContent='حدث خطأ أثناء تحميل سجل الزيارات.'}
 }
 
+async function renderAdmin(){
+const box=document.getElementById('adminList');box.innerHTML='<p class="muted">جارٍ تحميل المواد...</p>';
+const {data:subjects,error}=await supabaseClient.from('subjects').select('id,name,level').order('created_at',{ascending:true});
+if(error){box.textContent='تعذر تحميل المواد: '+error.message;return}box.innerHTML='';
+if(!subjects||subjects.length===0){box.innerHTML='<p class="muted">لا توجد مواد إضافية حتى الآن.</p>';return}
+subjects.forEach(subject=>{
+const d=document.createElement('div');d.className='subject';const t=document.createElement('span');t.textContent=subject.name+' - '+(subject.level==='first'?'الفرقة الأولى':'الفرقة الثانية');
+const b=document.createElement('button');b.className='secondary';b.textContent='حذف';b.onclick=async()=>{
+if(!confirm('هل أنت متأكد من حذف مادة '+subject.name+'؟'))return;b.disabled=true;b.textContent='جارٍ الحذف...';
+const {error:deleteError}=await supabaseClient.from('subjects').delete().eq('id',subject.id);
+if(deleteError){alert('تعذر حذف المادة: '+deleteError.message);b.disabled=false;b.textContent='حذف';return}
+await renderAdmin();if(activeLevel===subject.level)await renderSubjects();
+};d.append(t,b);box.append(d);
+});
+}
+
 async function saveCurrentResult(){
 const status=document.getElementById('saveStatus');
 const retry=document.getElementById('retrySaveBtn');
