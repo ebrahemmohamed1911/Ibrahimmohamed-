@@ -292,9 +292,19 @@ if(code!==ACCESS_CODE){msg.textContent='كود التفعيل غير صحيح.';
 msg.textContent='جارٍ تسجيل الدخول...';
 try{
 const {error:visitError}=await supabaseClient.rpc('record_site_visit',{p_full_name:studentName});
-if(visitError){console.error(visitError);msg.textContent='تعذر تسجيل الزيارة. حاول مرة أخرى.';return}
-currentStudentName=studentName;activeLevel=level;document.getElementById('loginCard').classList.add('hidden');document.getElementById('adminLoginCard').classList.add('hidden');
-document.getElementById('studentCard').classList.remove('hidden');document.getElementById('levelTitle').textContent=level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';await renderSubjects();
+currentStudentName=studentName;
+activeLevel=level;
+document.getElementById('loginCard').classList.add('hidden');
+document.getElementById('adminLoginCard').classList.add('hidden');
+document.getElementById('studentCard').classList.remove('hidden');
+document.getElementById('levelTitle').textContent=level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';
+if(visitError){
+  console.error('Visit tracking error:',visitError);
+  msg.textContent='تم الدخول، لكن تعذر تسجيل الزيارة في سجل الإدارة.';
+}else{
+  msg.textContent='';
+}
+await renderSubjects();
 }catch(e){console.error(e);msg.textContent='حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.'}
 }
 function logout(){
@@ -308,9 +318,18 @@ if(!email||!password){msg.textContent='اكتب البريد الإلكترون�
 btn.disabled=true;msg.textContent='جارٍ التحقق من الحساب...';
 try{
 const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
-if(error||!data.user){msg.textContent='تعذر تسجيل الدخول. راجع بيانات الحساب.';return}
+if(error||!data.user){
+  msg.textContent='تعذر تسجيل الدخول: '+(error?.message||'لم يتم العثور على حساب مستخدم.');
+  return;
+}
 const {data:admin,error:checkError}=await supabaseClient.from('admin_users').select('user_id').eq('user_id',data.user.id).maybeSingle();
-if(checkError||!admin){await supabaseClient.auth.signOut();msg.textContent='هذا الحساب غير مسجل كحساب إدارة.';return}
+if(checkError||!admin){
+  await supabaseClient.auth.signOut();
+  msg.textContent=checkError
+    ? 'تعذر التحقق من صلاحيات الإدارة: '+checkError.message
+    : 'هذا الحساب غير مسجل كحساب إدارة.';
+  return;
+}
 document.getElementById('adminLoginCard').classList.add('hidden');document.getElementById('loginCard').classList.add('hidden');document.getElementById('adminCard').classList.remove('hidden');await renderAdmin();await renderVisits();await renderResults();msg.textContent='';
 }catch(e){msg.textContent='حدث خطأ في الاتصال. حاول مرة أخرى.'}finally{btn.disabled=false}
 }
@@ -411,7 +430,7 @@ if(studentsError){box.textContent='تعذر تحميل أسماء الطلاب.'
 (students||[]).forEach(student=>{names[student.id]=student.full_name});
 }
 const table=document.createElement('table');
-table.style.width='100%';table.style.borderCollapse='collapse';
+table.style.width='100%';table.style.minWidth='520px';table.style.borderCollapse='collapse';
 const header=document.createElement('tr');
 ['اسم الطالب','نوع الحدث','تاريخ ووقت الدخول'].forEach(label=>{const th=document.createElement('th');th.textContent=label;th.style.textAlign='right';th.style.padding='9px 6px';th.style.borderBottom='1px solid #cbd5e1';header.append(th)});
 table.append(header);
@@ -421,7 +440,7 @@ const values=[names[visit.student_id]||'اسم غير متاح',visit.event_type
 values.forEach(value=>{const td=document.createElement('td');td.textContent=value;td.style.padding='9px 6px';td.style.borderBottom='1px solid #e2e8f0';tr.append(td)});
 table.append(tr);
 });
-box.innerHTML='';box.append(table);
+box.innerHTML='';const wrap=document.createElement('div');wrap.style.overflowX='auto';wrap.append(table);box.append(wrap);
 }catch(e){console.error(e);box.textContent='حدث خطأ أثناء تحميل سجل الزيارات.'}
 }
 
@@ -436,14 +455,4 @@ const b=document.createElement('button');b.className='secondary';b.textContent='
 if(!confirm('هل أنت متأكد من حذف مادة '+subject.name+'؟'))return;b.disabled=true;b.textContent='جارٍ الحذف...';
 const {error:deleteError}=await supabaseClient.from('subjects').delete().eq('id',subject.id);
 if(deleteError){alert('تعذر حذف المادة: '+deleteError.message);b.disabled=false;b.textContent='حذف';return}
-await renderAdmin();if(activeLevel===subject.level)await renderSubjects();
-};d.append(t,b);box.append(d);
-});
-}
-
-async function saveCurrentResult(){
-const status=document.getElementById('saveStatus');
-const retry=document.getElementById('retrySaveBtn');
-if(!lastResultPayload)return;
-status.textContent='جارٍ حفظ الدرجة...';
-retry.classList.add('hidden
+await renderAdmin();if(activeLevel
