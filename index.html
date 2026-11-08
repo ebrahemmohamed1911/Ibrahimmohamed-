@@ -54,7 +54,14 @@ footer{text-align:center;color:#64748b;padding:10px 0 28px;font-size:13px}
 <h2 id="examTitle" style="margin:0"></h2><button class="secondary" onclick="backToSubjects()">العودة للمواد</button></div>
 <p id="examInfo" class="muted"></p><div id="questions"></div>
 <button id="submitBtn" onclick="submitExam()">تسليم الإجابات وحساب الدرجة</button>
-<div id="resultBox" class="hidden"><hr><p id="result"></p><div id="review"></div><button onclick="backToSubjects()">العودة للمواد</button></div>
+<div id="resultBox" class="hidden">
+<hr>
+<p id="result"></p>
+<p id="saveStatus" class="muted"></p>
+<button id="retrySaveBtn" class="secondary hidden" onclick="saveCurrentResult()">إعادة حفظ الدرجة</button>
+<div id="review"></div>
+<button onclick="backToSubjects()">العودة للمواد</button>
+</div>
 </section>
 <section class="card hidden" id="adminCard">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">
@@ -66,6 +73,11 @@ footer{text-align:center;color:#64748b;padding:10px 0 28px;font-size:13px}
 <p class="muted">يعرض أسماء الطلاب وأوقات دخولهم المسجلة. آخر 200 زيارة.</p>
 <button class="secondary" onclick="renderVisits()">تحديث سجل الزوار</button>
 <div id="visitsList"><p class="muted">سجل الزيارات يظهر بعد تسجيل دخول الإدارة.</p></div>
+<hr>
+<h2>درجات الطلاب</h2>
+<p class="muted">درجات الطلاب بعد تسليم الامتحانات.</p>
+<button class="secondary" onclick="renderResults()">تحديث الدرجات</button>
+<div id="resultsList"><p class="muted">اضغط تحديث الدرجات لعرض النتائج.</p></div>
 </section>
 <footer>بوابة الامتحانات © 2026</footer>
 </main>
@@ -269,6 +281,8 @@ const exams={
 };
 
 let activeLevel='first',currentExam=[],currentSubject='';
+let currentStudentName='';
+let lastResultPayload=null;
 async function login(){
 const studentName=document.getElementById('studentName').value.trim();
 const code=document.getElementById('code').value.trim(),level=document.getElementById('level').value,msg=document.getElementById('msg');
@@ -279,7 +293,7 @@ msg.textContent='جارٍ تسجيل الدخول...';
 try{
 const {error:visitError}=await supabaseClient.rpc('record_site_visit',{p_full_name:studentName});
 if(visitError){console.error(visitError);msg.textContent='تعذر تسجيل الزيارة. حاول مرة أخرى.';return}
-activeLevel=level;document.getElementById('loginCard').classList.add('hidden');document.getElementById('adminLoginCard').classList.add('hidden');
+currentStudentName=studentName;activeLevel=level;document.getElementById('loginCard').classList.add('hidden');document.getElementById('adminLoginCard').classList.add('hidden');
 document.getElementById('studentCard').classList.remove('hidden');document.getElementById('levelTitle').textContent=level==='first'?'مواد الفرقة الأولى':'مواد الفرقة الثانية';await renderSubjects();
 }catch(e){console.error(e);msg.textContent='حدث خطأ أثناء تسجيل الدخول. حاول مرة أخرى.'}
 }
@@ -297,7 +311,7 @@ const {data,error}=await supabaseClient.auth.signInWithPassword({email,password}
 if(error||!data.user){msg.textContent='تعذر تسجيل الدخول. راجع بيانات الحساب.';return}
 const {data:admin,error:checkError}=await supabaseClient.from('admin_users').select('user_id').eq('user_id',data.user.id).maybeSingle();
 if(checkError||!admin){await supabaseClient.auth.signOut();msg.textContent='هذا الحساب غير مسجل كحساب إدارة.';return}
-document.getElementById('adminLoginCard').classList.add('hidden');document.getElementById('loginCard').classList.add('hidden');document.getElementById('adminCard').classList.remove('hidden');await renderAdmin();await renderVisits();msg.textContent='';
+document.getElementById('adminLoginCard').classList.add('hidden');document.getElementById('loginCard').classList.add('hidden');document.getElementById('adminCard').classList.remove('hidden');await renderAdmin();await renderVisits();await renderResults();msg.textContent='';
 }catch(e){msg.textContent='حدث خطأ في الاتصال. حاول مرة أخرى.'}finally{btn.disabled=false}
 }
 async function adminLogout(){
@@ -338,19 +352,38 @@ const d=document.createElement('div');d.className='question';const h=document.cr
 box.append(d);
 });
 }
-function submitExam(){
+async function submitExam(){
 let score=0;
 currentExam.forEach((q,i)=>{
-const chosen=document.querySelector('input[name="q'+i+'"]:checked'),value=chosen?Number(chosen.value):null,correct=q.o?q.a:(q.a?0:1);
+const chosen=document.querySelector('input[name="q'+i+'"]:checked');
+const value=chosen?Number(chosen.value):null;
+const correct=q.o?q.a:(q.a?0:1);
 if(value===correct)score++;
 const labels=[...document.querySelectorAll('input[name="q'+i+'"]')].map(input=>input.closest('label'));
-labels.forEach((label,j)=>{if(j===correct)label.classList.add('correct');if(value===j&&value!==correct)label.classList.add('wrong');label.querySelector('input').disabled=true});
-const questionBox=document.querySelectorAll('.question')[i],answer=document.createElement('p');answer.className='answer-key';
-answer.textContent='الإجابة الصحيحة: '+(q.o?q.o[q.a]:(q.a?'صح':'خطأ'));questionBox.append(answer);
+labels.forEach((label,j)=>{
+if(j===correct)label.classList.add('correct');
+if(value===j&&value!==correct)label.classList.add('wrong');
+label.querySelector('input').disabled=true;
+});
+const questionBox=document.querySelectorAll('.question')[i];
+const answer=document.createElement('p');
+answer.className='answer-key';
+answer.textContent='الإجابة الصحيحة: '+(q.o?q.o[q.a]:(q.a?'صح':'خطأ'));
+questionBox.append(answer);
 });
 document.getElementById('result').textContent='نتيجتك: '+score+' من '+currentExam.length;
-document.getElementById('resultBox').classList.remove('hidden');document.getElementById('submitBtn').disabled=true;
+document.getElementById('resultBox').classList.remove('hidden');
+document.getElementById('submitBtn').disabled=true;
+lastResultPayload={
+student_name:currentStudentName,
+subject_name:currentSubject,
+student_level:activeLevel,
+score:score,
+total_points:currentExam.length
+};
+await saveCurrentResult();
 }
+
 function backToSubjects(){document.getElementById('examCard').classList.add('hidden');document.getElementById('studentCard').classList.remove('hidden')}
 async function addSubject(){
 const name=document.getElementById('subjectName').value.trim(),level=document.getElementById('adminLevel').value,msg=document.getElementById('adminList'),btn=document.getElementById('addSubjectBtn');
@@ -407,6 +440,10 @@ await renderAdmin();if(activeLevel===subject.level)await renderSubjects();
 };d.append(t,b);box.append(d);
 });
 }
-</script>
-</body>
-</html>
+
+async function saveCurrentResult(){
+const status=document.getElementById('saveStatus');
+const retry=document.getElementById('retrySaveBtn');
+if(!lastResultPayload)return;
+status.textContent='جارٍ حفظ الدرجة...';
+retry.classList.add('hidden
